@@ -1,67 +1,82 @@
 package com.example.kotlin2
 
-import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.kotlin2.data.Word
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.alert_dialog_add_new_word.*
-import kotlinx.coroutines.*
-import kotlin.coroutines.CoroutineContext
 
-class MainActivity : AppCompatActivity(), MyView, CoroutineScope {
+
+class MainActivity : AppCompatActivity(), MyView, OnItemClicked {
     private lateinit var alertDialog: AlertDialog
     private lateinit var myPresenter: MyPresenter
-    private var job: Job = Job()
 
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO + job
-
-    override fun onDestroy() {
-        super.onDestroy()
-        job.cancel()
-    }
-
-    @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setClickListener()
         myPresenter = MyPresenter(this)
-        alertDialog = AlertDialog.Builder(this)
-            .setView(layoutInflater.inflate(R.layout.alert_dialog_add_new_word, null))
-            .create()
-recyclerViewWords.adapter
+        recyclerViewWords.layoutManager = LinearLayoutManager(this)
+        myPresenter.loadDB()
+        setClickListener()
 
     }
 
     override fun updateRecyclerView(list: MutableList<Word>) {
-
+        recyclerViewWords.adapter = AdapterWord(list,this)
     }
-
 
     override fun showAlertForAddNewWord() {
         createAlertDialogForAddNewWord()
-
     }
 
+    override fun showAlertForEditWord(word: Word) {
+        createAlertDialogForEditWord(word)
+    }
 
     private fun setClickListener() {
         buttonAddNewWord.setOnClickListener { myPresenter.onButtonAddNewWord() }
     }
 
-
-    @SuppressLint("InflateParams")
-    fun createAlertDialogForAddNewWord() {
-        buttonSaveNewWord.setOnClickListener {
-            launch { myPresenter.onButtonSaveWord(editTextNewWord.text.toString().trim())  }
+    private fun createAlertDialogForAddNewWord() {
+        val viewDialogLayout =View.inflate(this,R.layout.alert_dialog_add_new_word, null)
+        val buttonSaveWord = viewDialogLayout.findViewById<Button>(R.id.buttonSaveNewWord)
+        val editTextWord = viewDialogLayout.findViewById<EditText>(R.id.editTextNewWord)
+        buttonSaveWord.setOnClickListener {
+            myPresenter.onButtonSaveWord(editTextWord.text.toString().trim())
             alertDialog.dismiss()
         }
+        alertDialog = AlertDialog.Builder(this).setView(viewDialogLayout).create()
         alertDialog.show()
+    }
 
+    private fun createAlertDialogForEditWord(word: Word) {
+        val viewDialogLayout =View.inflate(this,R.layout.alert_dialog_add_new_word, null)
+        val buttonSaveWord = viewDialogLayout.findViewById<Button>(R.id.buttonSaveNewWord)
+        val editTextWord = viewDialogLayout.findViewById<EditText>(R.id.editTextNewWord)
+        val nameAlertDialog=viewDialogLayout.findViewById<TextView>(R.id.nameAlertDialog)
+        nameAlertDialog.text="Редактирование"
+        editTextWord.setText(word.newWord)
+        buttonSaveWord.setOnClickListener {
+            word.newWord=editTextWord.text.toString().trim()
+            myPresenter.onButtonSaveEditWord(word)
+            alertDialog.dismiss()
+        }
+        alertDialog = AlertDialog.Builder(this).setView(viewDialogLayout).create()
+        alertDialog.show()
+    }
 
+    override fun onItemClickedRemove(position: Int) {
+        myPresenter.onButtonRemoveWord(position)
+    }
+    override fun onItemClickedEdit(position: Int) {
+        myPresenter.onButtonEditWord(position)
     }
 
 
 }
+

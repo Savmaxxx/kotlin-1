@@ -13,7 +13,7 @@ interface WordDao {
     @Update
     fun update(word: Word)
 
-    @Query("SELECT*FROM Word")
+    @Query("SELECT*FROM word_table")
     fun getWord(): MutableList<Word>
 
 }

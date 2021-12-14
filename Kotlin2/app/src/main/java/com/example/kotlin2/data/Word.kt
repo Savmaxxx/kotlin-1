@@ -1,13 +1,13 @@
 package com.example.kotlin2.data
 
-import androidx.annotation.NonNull
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
-class Word(_newWord: String) {
-    @PrimaryKey
-    @NonNull
-    var newWord = _newWord
+@Entity(tableName = "word_table")
+
+data class Word(  var newWord: String) {
+    @PrimaryKey(autoGenerate = true) var id: Int = 0
+
+
 
 }
