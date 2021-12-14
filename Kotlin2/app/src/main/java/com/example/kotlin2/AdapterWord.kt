@@ -27,8 +27,7 @@ class AdapterWord(private val words: MutableList<Word>, _onItemClicked: OnItemCl
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderWord {
-        val itemView =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_recycler_view, parent, false)
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_recycler_view, parent, false)
         return ViewHolderWord(itemView)
     }
 

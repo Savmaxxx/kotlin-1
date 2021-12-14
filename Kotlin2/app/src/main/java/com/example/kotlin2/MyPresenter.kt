@@ -45,8 +45,8 @@ class MyPresenter(_myView: MyView) {
 
     fun onButtonEditWord(position: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            val word:Word=myRepository.getWord(position)
-            withContext(Main){
+            val word: Word = myRepository.getWord(position)
+            withContext(Main) {
                 myView.showAlertForEditWord(word)
             }
 
@@ -55,12 +55,12 @@ class MyPresenter(_myView: MyView) {
     }
 
     fun onButtonSaveEditWord(word: Word) {
-CoroutineScope(Dispatchers.IO).launch {
-    val list: MutableList<Word> =myRepository.upDataBD(word)
-    withContext(Main){
-        myView.updateRecyclerView(list)
-    }
-}
+        CoroutineScope(Dispatchers.IO).launch {
+            val list: MutableList<Word> = myRepository.upDataBD(word)
+            withContext(Main) {
+                myView.updateRecyclerView(list)
+            }
+        }
     }
 }
 
